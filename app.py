@@ -5,6 +5,7 @@ from utils.preprocessing import preprocess_data
 from models.forecasting import moving_average_forecast
 from utils.visualization import plot_forecast
 from config import PRODUCT_COLUMN, SALES_COLUMN, DATE_COLUMN
+from models.forecasting import evaluate_moving_average
 
 st.set_page_config(page_title="UMKM Demand Forecasting", layout="wide")
 
@@ -39,6 +40,15 @@ if file is not None:
         # Tabel hasil prediksi
         st.subheader("Detail Prediksi Harian")
         st.dataframe(forecast_df)
+
+        # Evaluasi model
+        mae, rmse, mape = evaluate_moving_average(product_df)
+
+        st.subheader("📊 Evaluasi Model (Moving Average)")
+        st.write(f"- MAE  : {mae:.2f}")
+        st.write(f"- RMSE : {rmse:.2f}")
+        st.write(f"- MAPE : {mape:.2f}%")
+
 
     except Exception as e:
         st.error(f"Terjadi error: {e}")
