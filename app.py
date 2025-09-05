@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from utils.data_loader import load_data
 from utils.preprocessing import preprocess_data
 from models.forecasting import moving_average_forecast
