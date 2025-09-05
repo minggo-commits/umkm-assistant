@@ -11,6 +11,43 @@ from utils.visualization import plot_forecast
 from config import PRODUCT_COLUMN, SALES_COLUMN, DATE_COLUMN
 from models.forecasting import evaluate_moving_average
 
+def show_sales_insights(df):
+            st.header("📊 Sales Insights Dashboard")
+
+            # 1. Produk terlaris
+            st.subheader("Top Produk Terlaris")
+            top_products = df.groupby("produk")["jumlah_terjual"].sum().sort_values(ascending=False)
+            st.bar_chart(top_products)
+
+            # 2. Tren penjualan harian
+            st.subheader("Tren Penjualan Harian")
+            daily_sales = df.groupby("tanggal")["jumlah_terjual"].sum()
+            st.line_chart(daily_sales)
+
+            # 3. Hari paling ramai
+            st.subheader("Hari Paling Ramai (Rata-rata Penjualan)")
+            df["day_name"] = df["tanggal"].dt.day_name()
+            avg_by_day = df.groupby("day_name")["jumlah_terjual"].mean()
+            avg_by_day = avg_by_day.reindex(
+                ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            )
+            fig, ax = plt.subplots()
+            sns.barplot(x=avg_by_day.index, y=avg_by_day.values, ax=ax)
+            plt.xticks(rotation=45)
+            st.pyplot(fig)
+
+            # 4. Ringkasan statistik
+            st.subheader("Ringkasan Statistik")
+            total_sales = df["jumlah_terjual"].sum()
+            best_product = top_products.index[0]
+            best_product_sales = top_products.iloc[0]
+            avg_sales_per_day = daily_sales.mean()
+
+            st.write(f"- Total penjualan: **{total_sales} unit**")
+            st.write(f"- Produk terlaris: **{best_product} ({best_product_sales} unit)**")
+            st.write(f"- Rata-rata penjualan per hari: **{avg_sales_per_day:.2f} unit**")
+
+
 st.set_page_config(page_title="UMKM Demand Forecasting", layout="wide")
 
 st.title("📈 UMKM Demand Forecasting (MVP)")
@@ -62,42 +99,7 @@ with tab1:
 
 with tab2:
     if df is not None:
-        def show_sales_insights(df):
-            st.header("📊 Sales Insights Dashboard")
-
-            # 1. Produk terlaris
-            st.subheader("Top Produk Terlaris")
-            top_products = df.groupby("produk")["jumlah_terjual"].sum().sort_values(ascending=False)
-            st.bar_chart(top_products)
-
-            # 2. Tren penjualan harian
-            st.subheader("Tren Penjualan Harian")
-            daily_sales = df.groupby("tanggal")["jumlah_terjual"].sum()
-            st.line_chart(daily_sales)
-
-            # 3. Hari paling ramai
-            st.subheader("Hari Paling Ramai (Rata-rata Penjualan)")
-            df["day_name"] = df["tanggal"].dt.day_name()
-            avg_by_day = df.groupby("day_name")["jumlah_terjual"].mean()
-            avg_by_day = avg_by_day.reindex(
-                ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-            )
-            fig, ax = plt.subplots()
-            sns.barplot(x=avg_by_day.index, y=avg_by_day.values, ax=ax)
-            plt.xticks(rotation=45)
-            st.pyplot(fig)
-
-            # 4. Ringkasan statistik
-            st.subheader("Ringkasan Statistik")
-            total_sales = df["jumlah_terjual"].sum()
-            best_product = top_products.index[0]
-            best_product_sales = top_products.iloc[0]
-            avg_sales_per_day = daily_sales.mean()
-
-            st.write(f"- Total penjualan: **{total_sales} unit**")
-            st.write(f"- Produk terlaris: **{best_product} ({best_product_sales} unit)**")
-            st.write(f"- Rata-rata penjualan per hari: **{avg_sales_per_day:.2f} unit**")
-
+        show_sales_insights(df)
     else:
         st.info("Silahkan upload dataset terlebih dahulu")
     
