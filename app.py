@@ -61,7 +61,7 @@ with tab1:
             st.write(f"- MAPE : {mape:.2f}%")
 
 with tab2:
-    if df is not Nane:
+    if df is not None:
         def show_sales_insights(df):
             st.header("📊 Sales Insights Dashboard")
 
